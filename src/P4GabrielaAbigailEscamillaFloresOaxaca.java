@@ -34,8 +34,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     double subtotal = 0;
 
     //Fuentes
-    Font titulo = new Font("Arial", Font.BOLD, 20);
-    Font normal = new Font("Arial", Font.PLAIN, 14);
+    Font titulo = new Font("Verdana", Font.BOLD, 20);
+    Font normal = new Font("Verdana", Font.PLAIN, 14);
 
     public static void main(String[] args) {
         P4GabrielaAbigailEscamillaFloresOaxaca v = new P4GabrielaAbigailEscamillaFloresOaxaca();
@@ -222,9 +222,9 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         double iva = subtotal * 0.16;
         double total = subtotal + iva;
 
-        lblSub.setText("Subtotal: $" + subtotal);
-        lblIVA.setText("IVA (16%): $" + iva);
-        lblTotal.setText("TOTAL: $" + total);
+        lblSub.setText("Subtotal: $" + String.format("%.2f", subtotal));
+        lblIVA.setText("IVA (16%): $" + String.format("%.2f", iva));
+        lblTotal.setText("TOTAL: $" + String.format("%.2f", total));
     }
 
     //-------------------------------------------------------
@@ -280,9 +280,9 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
             facturaPanel.add(Box.createVerticalStrut(10));
 
             // TOTALES
-            JLabel l1 = new JLabel("Subtotal: $" + subtotal);
-            JLabel l2 = new JLabel("IVA (16%): $" + (subtotal * 0.16));
-            JLabel l3 = new JLabel("TOTAL: $" + (subtotal * 1.16));
+            JLabel l1 = new JLabel("Subtotal: $" + String.format("%.2f", subtotal));
+            JLabel l2 = new JLabel("IVA (16%): $" + String.format("%.2f",subtotal * 0.16));
+            JLabel l3 = new JLabel("TOTAL: $" + String.format("%.2f", subtotal * 1.16));
 
             facturaPanel.add(l1);
             facturaPanel.add(l2);
