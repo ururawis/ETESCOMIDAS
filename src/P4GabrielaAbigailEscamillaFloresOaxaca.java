@@ -9,323 +9,437 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
+import javax.swing.border.*;
 
 public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements ActionListener {
 
-    //Paneles
-    JPanel panelMenu, panelFactura;
+    JTextArea ticket;
 
-    //Botones
-    JButton btnEliminar, btnFactura, btnSalir;
+    // Cantidades
+    JTextField cantTlayDes, cantMemelas, cantEnchiladas;
+    JTextField cantMole, cantTasajo, cantPiedra;
+    JTextField cantTlayGran, cantEmpanadas, cantQuesa;
 
-    //Lista visual del carrito
-    DefaultListModel<String> modeloCarrito = new DefaultListModel<>();
-    JList<String> listaCarrito = new JList<>(modeloCarrito);
-
-    //Totales
-    JLabel lblSub, lblIVA, lblTotal;
-
-    //Métodos de pago
+    // Pago
     JRadioButton rbEfectivo, rbTarjeta, rbTransferencia;
-    ButtonGroup grupoPago = new ButtonGroup();
+    JTextField campoPago;
 
+    // Totales
     double subtotal = 0;
+    double iva = 0;
+    double total = 0;
 
-    //Fuentes más vistosas
-    Font titulo = new Font("Serif", Font.BOLD, 22);
-    Font normal = new Font("Serif", Font.PLAIN, 16);
+    public P4GabrielaAbigailEscamillaFloresOaxaca() {
 
-    public static void main(String[] args) {
-        P4GabrielaAbigailEscamillaFloresOaxaca v = new P4GabrielaAbigailEscamillaFloresOaxaca();
-        v.crearGUI();
-        v.setSize(1110, 700);
-        v.setVisible(true);
-        v.setLocationRelativeTo(null);
-        v.setResizable(false);
-    }
+        super("Restaurante Oaxaca");
+        setLayout(null);
 
-    public void crearGUI() {
+        // PANEL MENÚ
+        JPanel menu = new JPanel(null);
+        menu.setBounds(20, 20, 520, 600);
+        menu.setBackground(new Color(255, 240, 240));
+        menu.setBorder(new LineBorder(Color.RED, 3));
+        add(menu);
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        Container cp = getContentPane();
-        cp.setLayout(null);
+        JLabel titulo = new JLabel("MENÚ OAXACA");
+        titulo.setFont(new Font("Arial", Font.BOLD, 26));
+        titulo.setBounds(150, 10, 300, 40);
+        menu.add(titulo);
 
-        // ======================================
-        // PALETA OAXAQUEÑA
-        // ======================================
-        Color rosaMex = new Color(230, 30, 120);
-        Color amarilloMaiz = new Color(250, 210, 90);
-        Color verdeJade = new Color(60, 130, 90);
-        Color azulAnil = new Color(40, 60, 140);
-        Color terracota = new Color(180, 80, 50);
+        // CARRITO
+        ticket = new JTextArea();
+        ticket.setEditable(false);
+        JScrollPane scroll = new JScrollPane(ticket);
+        scroll.setBounds(560, 200, 200, 350);
+        add(scroll);
 
-        //-----------------------------------------
-        // PANEL IZQUIERDO – MENÚ
-        //-----------------------------------------
-        panelMenu = new JPanel(null);
-        panelMenu.setBounds(20, 20, 500, 560);
-        panelMenu.setBackground(new Color(255, 235, 240));
-        panelMenu.setBorder(new LineBorder(rosaMex, 4));
-        cp.add(panelMenu);
+        JLabel lblTicket = new JLabel("CARRITO:");
+        lblTicket.setFont(new Font("Arial", Font.BOLD, 16));
+        lblTicket.setBounds(560, 170, 200, 25);
+        add(lblTicket);
 
-        JLabel lblTituloMenu = new JLabel("MENÚ OAXACA");
-        lblTituloMenu.setFont(titulo);
-        lblTituloMenu.setForeground(rosaMex);
-        lblTituloMenu.setBounds(170, 10, 250, 35);
-        panelMenu.add(lblTituloMenu);
+        // ---------------------- DESAYUNOS ----------------------
 
-        //-----------------------------------------
-        // DESAYUNOS
-        //-----------------------------------------
-        agregarCategoria("DESAYUNOS", 60);
+        JLabel d = new JLabel("DESAYUNOS");
+        d.setFont(new Font("Arial", Font.BOLD, 18));
+        d.setBounds(20, 60, 200, 25);
+        menu.add(d);
 
-        crearPlatillo("Tlayuda desayuno", 80, 100, amarilloMaiz,
-            "tlayDes.jpg"); 
+        // TLAYUDA DESAYUNO
+        JLabel img1 = new JLabel(new ImageIcon("tlayuda.png"));
+        img1.setBounds(20, 100, 40, 40);
+        menu.add(img1);
 
-        crearPlatillo("Memelas", 40, 140, terracota,
-            "memelas.jpg");
+        JLabel l1 = new JLabel("Tlayuda desayuno $80");
+        l1.setBounds(70, 100, 200, 25);
+        menu.add(l1);
 
-        crearPlatillo("Enchiladas verdes", 70, 180, verdeJade,
-            "enchVerd.jpg"); 
+        cantTlayDes = new JTextField("0");
+        cantTlayDes.setBounds(280, 100, 50, 25);
+        menu.add(cantTlayDes);
 
-        //-----------------------------------------
-        // COMIDAS
-        //-----------------------------------------
-        agregarCategoria("COMIDAS", 230);
+        JButton b1 = new JButton("Agregar");
+        b1.setBounds(350, 100, 100, 25);
+        menu.add(b1);
 
-        crearPlatillo("Mole negro", 120, 270, azulAnil,
-            "moleNegro.jpg"); // Imagen Mole negro
+        b1.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantTlayDes.getText());
+                if (cant > 0) {
+                    double s = cant * 80;
+                    subtotal += s;
+                    ticket.append("Tlayuda desayuno x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
 
-        crearPlatillo("Tasajo con frijoles", 150, 310, rosaMex,
-            "Tasajo.jpg"); // Imagen Tasajo con frijoles
+        // MEMELAS
+        JLabel img2 = new JLabel(new ImageIcon("memelas.png"));
+        img2.setBounds(20, 140, 40, 40);
+        menu.add(img2);
 
-        crearPlatillo("Caldo de piedra", 110, 350, amarilloMaiz,
-            "piedra.jpg"); // Imagen Caldo de piedra
+        JLabel l2 = new JLabel("Memelas $40");
+        l2.setBounds(70, 140, 200, 25);
+        menu.add(l2);
 
-        //-----------------------------------------
-        // CENAS
-        //-----------------------------------------
-        agregarCategoria("CENAS", 400);
+        cantMemelas = new JTextField("0");
+        cantMemelas.setBounds(280, 140, 50, 25);
+        menu.add(cantMemelas);
 
-        crearPlatillo("Tlayuda grande", 100, 440, verdeJade,
-            "tlayGran.jpg"); // Imagen Tlayuda grande
+        JButton b2 = new JButton("Agregar");
+        b2.setBounds(350, 140, 100, 25);
+        menu.add(b2);
 
-        crearPlatillo("Empanadas de amarillo", 60, 480, terracota,
-            "empanadas.jpg"); // Imagen Empanadas de amarillo
+        b2.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantMemelas.getText());
+                if (cant > 0) {
+                    double s = cant * 40;
+                    subtotal += s;
+                    ticket.append("Memelas x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
 
-        crearPlatillo("Quesadillas de flor", 50, 520, azulAnil,
-            "quesadillas.jpg"); // Imagen Quesadillas de flor
+        // ENCHILADAS
+        JLabel img3 = new JLabel(new ImageIcon("enchiladas.png"));
+        img3.setBounds(20, 180, 40, 40);
+        menu.add(img3);
 
-        //-----------------------------------------
-        // PANEL FACTURA
-        //-----------------------------------------
-        panelFactura = new JPanel(null);
-        panelFactura.setBounds(540, 20, 540, 560);
-        panelFactura.setBackground(new Color(240, 250, 255));
-        panelFactura.setBorder(new LineBorder(azulAnil, 4));
-        cp.add(panelFactura);
+        JLabel l3 = new JLabel("Enchiladas verdes $70");
+        l3.setBounds(70, 180, 200, 25);
+        menu.add(l3);
 
-        JLabel lblFact = new JLabel("FACTURA");
-        lblFact.setFont(titulo);
-        lblFact.setForeground(azulAnil);
-        lblFact.setBounds(220, 10, 200, 35);
-        panelFactura.add(lblFact);
+        cantEnchiladas = new JTextField("0");
+        cantEnchiladas.setBounds(280, 180, 50, 25);
+        menu.add(cantEnchiladas);
 
+        JButton b3 = new JButton("Agregar");
+        b3.setBounds(350, 180, 100, 25);
+        menu.add(b3);
 
-        //-----------------------------------------
-        // LISTA
-        //-----------------------------------------
-        listaCarrito.setFont(normal);
-        JScrollPane scroll = new JScrollPane(listaCarrito);
-        scroll.setBounds(30, 60, 470, 200);
-        panelFactura.add(scroll);
+        b3.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantEnchiladas.getText());
+                if (cant > 0) {
+                    double s = cant * 70;
+                    subtotal += s;
+                    ticket.append("Enchiladas verdes x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
 
-        //-----------------------------------------
-        // TOTALES
-        //-----------------------------------------
-        lblSub = new JLabel("Subtotal: $0");
-        lblIVA = new JLabel("IVA (16%): $0");
-        lblTotal = new JLabel("TOTAL: $0");
+        // ---------------------- COMIDAS ----------------------
 
-        lblSub.setBounds(40, 280, 250, 30);
-        lblSub.setForeground(terracota);
-        lblIVA.setBounds(40, 310, 250, 30);
-        lblIVA.setForeground(terracota);
-        lblTotal.setBounds(40, 340, 250, 30);
-        lblTotal.setForeground(terracota);
+        JLabel c = new JLabel("COMIDAS");
+        c.setFont(new Font("Arial", Font.BOLD, 18));
+        c.setBounds(20, 230, 200, 25);
+        menu.add(c);
 
-        panelFactura.add(lblSub);
-        panelFactura.add(lblIVA);
-        panelFactura.add(lblTotal);
+        // MOLE NEGRO
+        JLabel img4 = new JLabel(new ImageIcon("mole.png"));
+        img4.setBounds(20, 270, 40, 40);
+        menu.add(img4);
 
-        //-----------------------------------------
-        // MÉTODOS DE PAGO
-        //-----------------------------------------
-        JLabel lblPago = new JLabel("Método de pago:");
-        lblPago.setBounds(300, 280, 200, 25);
-        lblPago.setForeground(azulAnil);
-        panelFactura.add(lblPago);
+        JLabel l4 = new JLabel("Mole negro $120");
+        l4.setBounds(70, 270, 200, 25);
+        menu.add(l4);
+
+        cantMole = new JTextField("0");
+        cantMole.setBounds(280, 270, 50, 25);
+        menu.add(cantMole);
+
+        JButton b4 = new JButton("Agregar");
+        b4.setBounds(350, 270, 100, 25);
+        menu.add(b4);
+
+        b4.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantMole.getText());
+                if (cant > 0) {
+                    double s = cant * 120;
+                    subtotal += s;
+                    ticket.append("Mole negro x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // TASAJO
+        JLabel img5 = new JLabel(new ImageIcon("tasajo.png"));
+        img5.setBounds(20, 310, 40, 40);
+        menu.add(img5);
+
+        JLabel l5 = new JLabel("Tasajo con frijoles $150");
+        l5.setBounds(70, 310, 200, 25);
+        menu.add(l5);
+
+        cantTasajo = new JTextField("0");
+        cantTasajo.setBounds(280, 310, 50, 25);
+        menu.add(cantTasajo);
+
+        JButton b5 = new JButton("Agregar");
+        b5.setBounds(350, 310, 100, 25);
+        menu.add(b5);
+
+        b5.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantTasajo.getText());
+                if (cant > 0) {
+                    double s = cant * 150;
+                    subtotal += s;
+                    ticket.append("Tasajo con frijoles x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // CALDO DE PIEDRA
+        JLabel img6 = new JLabel(new ImageIcon("piedra.png"));
+        img6.setBounds(20, 350, 40, 40);
+        menu.add(img6);
+
+        JLabel l6 = new JLabel("Caldo de piedra $110");
+        l6.setBounds(70, 350, 200, 25);
+        menu.add(l6);
+
+        cantPiedra = new JTextField("0");
+        cantPiedra.setBounds(280, 350, 50, 25);
+        menu.add(cantPiedra);
+
+        JButton b6 = new JButton("Agregar");
+        b6.setBounds(350, 350, 100, 25);
+        menu.add(b6);
+
+        b6.addActionListener(e -> {
+            try {
+                int cant = Integer.parseInt(cantPiedra.getText());
+                if (cant > 0) {
+                    double s = cant * 110;
+                    subtotal += s;
+                    ticket.append("Caldo de piedra x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // ---------------------- CENAS ----------------------
+
+        JLabel e = new JLabel("CENAS");
+        e.setFont(new Font("Arial", Font.BOLD, 18));
+        e.setBounds(20, 400, 200, 25);
+        menu.add(e);
+
+        // TLAYUDA GRANDE
+        JLabel img7 = new JLabel(new ImageIcon("tlayuda_grande.png"));
+        img7.setBounds(20, 440, 40, 40);
+        menu.add(img7);
+
+        JLabel l7 = new JLabel("Tlayuda grande $100");
+        l7.setBounds(70, 440, 200, 25);
+        menu.add(l7);
+
+        cantTlayGran = new JTextField("0");
+        cantTlayGran.setBounds(280, 440, 50, 25);
+        menu.add(cantTlayGran);
+
+        JButton b7 = new JButton("Agregar");
+        b7.setBounds(350, 440, 100, 25);
+        menu.add(b7);
+
+        b7.addActionListener(e2 -> {
+            try {
+                int cant = Integer.parseInt(cantTlayGran.getText());
+                if (cant > 0) {
+                    double s = cant * 100;
+                    subtotal += s;
+                    ticket.append("Tlayuda grande x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // EMPANADAS
+        JLabel img8 = new JLabel(new ImageIcon("empanadas.png"));
+        img8.setBounds(20, 480, 40, 40);
+        menu.add(img8);
+
+        JLabel l8 = new JLabel("Empanadas amarillo $60");
+        l8.setBounds(70, 480, 200, 25);
+        menu.add(l8);
+
+        cantEmpanadas = new JTextField("0");
+        cantEmpanadas.setBounds(280, 480, 50, 25);
+        menu.add(cantEmpanadas);
+
+        JButton b8 = new JButton("Agregar");
+        b8.setBounds(350, 480, 100, 25);
+        menu.add(b8);
+
+        b8.addActionListener(e2 -> {
+            try {
+                int cant = Integer.parseInt(cantEmpanadas.getText());
+                if (cant > 0) {
+                    double s = cant * 60;
+                    subtotal += s;
+                    ticket.append("Empanadas amarillo x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // QUESADILLAS
+        JLabel img9 = new JLabel(new ImageIcon("quesadilla.png"));
+        img9.setBounds(20, 520, 40, 40);
+        menu.add(img9);
+
+        JLabel l9 = new JLabel("Quesadillas flor $50");
+        l9.setBounds(70, 520, 200, 25);
+        menu.add(l9);
+
+        cantQuesa = new JTextField("0");
+        cantQuesa.setBounds(280, 520, 50, 25);
+        menu.add(cantQuesa);
+
+        JButton b9 = new JButton("Agregar");
+        b9.setBounds(350, 520, 100, 25);
+        menu.add(b9);
+
+        b9.addActionListener(e2 -> {
+            try {
+                int cant = Integer.parseInt(cantQuesa.getText());
+                if (cant > 0) {
+                    double s = cant * 50;
+                    subtotal += s;
+                    ticket.append("Quesadillas flor x" + cant + " = $" + s + "\n");
+                }
+            } catch (Exception ex) {}
+        });
+
+        // ---------------------- MÉTODO DE PAGO ----------------------
 
         rbEfectivo = new JRadioButton("Efectivo");
         rbTarjeta = new JRadioButton("Tarjeta");
         rbTransferencia = new JRadioButton("Transferencia");
 
-        agregarPago(rbEfectivo, 300, 310);
-        agregarPago(rbTarjeta, 300, 340);
-        agregarPago(rbTransferencia, 300, 370);
+        ButtonGroup g = new ButtonGroup();
+        g.add(rbEfectivo);
+        g.add(rbTarjeta);
+        g.add(rbTransferencia);
 
-        //-----------------------------------------
-        // CÓDIGO DE BARRAS EN PANEL FACTURA
-        //-----------------------------------------
-        ImageIcon iconCB = new ImageIcon("codigo.png"); 
-        Image imgCB = iconCB.getImage().getScaledInstance(250, 100, Image.SCALE_SMOOTH);
-        JLabel lblCodigo = new JLabel(new ImageIcon(imgCB));
-        lblCodigo.setBounds(150, 395, 250, 100);
-        panelFactura.add(lblCodigo);
+        rbEfectivo.setBounds(560, 60, 100, 25);
+        rbTarjeta.setBounds(660, 60, 100, 25);
+        rbTransferencia.setBounds(560, 85, 150, 25);
 
-        //-----------------------------------------
-        // BOTONES
-        //-----------------------------------------
-        btnEliminar = new JButton("Eliminar último");
-        btnEliminar.setBounds(260, 420, 150, 35);
-        btnEliminar.setBackground(rosaMex);
-        btnEliminar.setForeground(Color.WHITE);
-        btnEliminar.addActionListener(this);
-        panelFactura.add(btnEliminar);
+        add(rbEfectivo);
+        add(rbTarjeta);
+        add(rbTransferencia);
 
-        btnFactura = new JButton("Generar factura");
-        btnFactura.setBounds(260, 465, 150, 35);
-        btnFactura.setBackground(verdeJade);
-        btnFactura.setForeground(Color.WHITE);
-        btnFactura.addActionListener(this);
-        panelFactura.add(btnFactura);
+        JLabel lp = new JLabel("Paga con:");
+        lp.setBounds(560, 120, 80, 25);
+        add(lp);
 
-        btnSalir = new JButton("Salir");
-        btnSalir.setBounds(430, 465, 80, 35);
-        btnSalir.setBackground(terracota);
-        btnSalir.setForeground(Color.WHITE);
-        btnSalir.addActionListener(this);
-        panelFactura.add(btnSalir);
+        campoPago = new JTextField();
+        campoPago.setBounds(630, 120, 100, 25);
+        add(campoPago);
+
+        JButton generar = new JButton("Generar factura");
+        generar.setBounds(560, 150, 200, 30);
+        generar.addActionListener(this);
+        add(generar);
+
+        JButton salir = new JButton("Salir");
+        salir.setBounds(560, 560, 200, 30);
+        salir.addActionListener(e3 -> System.exit(0));
+        add(salir);
+
+        // Ventana
+        setSize(800, 680);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
     }
 
-    //-------------------------------------------------------
-    // CATEGORÍAS
-    //-------------------------------------------------------
-    private void agregarCategoria(String nombre, int y) {
-        JLabel lbl = new JLabel(nombre);
-        lbl.setFont(titulo);
-        lbl.setForeground(new Color(180, 50, 100)); // rosa oscuro
-        lbl.setBounds(30, y, 300, 30);
-        panelMenu.add(lbl);
-    }
+    // ---------------------- FACTURA ----------------------
 
-    //-------------------------------------------------------
-    // CREAR PLATILLO CON IMAGEN
-    //-------------------------------------------------------
-    private void crearPlatillo(String nombre, double precio, int y, Color color, String imgRuta) {
-
-        JButton btn = new JButton(nombre + "  $" + precio);
-        btn.setBounds(30, y, 260, 30);
-        btn.setFont(normal);
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
-        panelMenu.add(btn);
-
-        // Imagen — aquí se pone "x.jpg"
-        JLabel img = new JLabel(new ImageIcon(imgRuta));
-        img.setBounds(320, y, 120, 30);
-        panelMenu.add(img);
-
-        btn.addActionListener(evt -> {
-            modeloCarrito.addElement(nombre + "   $ " + precio);
-            subtotal += precio;
-            actualizarTotales();
-        });
-    }
-
-    //-------------------------------------------------------
-    private void agregarPago(JRadioButton rb, int x, int y) {
-        rb.setBounds(x, y, 150, 25);
-        rb.setFont(normal);
-        rb.setBackground(panelFactura.getBackground());
-        grupoPago.add(rb);
-        panelFactura.add(rb);
-    }
-
-    //-------------------------------------------------------
-    private void actualizarTotales() {
-        double iva = subtotal * 0.16;
-        double total = subtotal + iva;
-
-        lblSub.setText("Subtotal: $" + String.format("%.2f", subtotal));
-        lblIVA.setText("IVA (16%): $" + String.format("%.2f", iva));
-        lblTotal.setText("TOTAL: $" + String.format("%.2f", total));
-    }
-
-    //-------------------------------------------------------
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == btnEliminar) {
-            if (modeloCarrito.size() > 0) {
+        iva = subtotal * 0.16;
+        total = subtotal + iva;
 
-                String ultimo = modeloCarrito.get(modeloCarrito.size() - 1);
-                double precio = Double.parseDouble(ultimo.substring(ultimo.lastIndexOf("$") + 1).trim());
-                subtotal -= precio;
+        String metodo = "";
+        double cambio = 0;
 
-                modeloCarrito.remove(modeloCarrito.size() - 1);
-                actualizarTotales();
-            }
-        }
-
-        if (e.getSource() == btnFactura) {
-
-            if (grupoPago.getSelection() == null) {
-                JOptionPane.showMessageDialog(this, "Seleccione forma de pago");
+        if (rbEfectivo.isSelected()) {
+            metodo = "EFECTIVO";
+            try {
+                double pago = Double.parseDouble(campoPago.getText());
+                if (pago < total) {
+                    JOptionPane.showMessageDialog(this, "Pago insuficiente");
+                    return;
+                }
+                cambio = pago - total;
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Ingresa pago válido");
                 return;
             }
-
-            JPanel facturaPanel = new JPanel();
-            facturaPanel.setLayout(new BoxLayout(facturaPanel, BoxLayout.Y_AXIS));
-
-            JLabel t = new JLabel("FACTURA DE CONSUMO");
-            t.setFont(new Font("Serif", Font.BOLD, 18));
-            t.setAlignmentX(Component.CENTER_ALIGNMENT);
-            facturaPanel.add(t);
-
-            facturaPanel.add(Box.createVerticalStrut(10));
-
-            JTextArea textoProductos = new JTextArea(10, 25);
-            textoProductos.setEditable(false);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < modeloCarrito.size(); i++) {
-                sb.append(modeloCarrito.get(i)).append("\n");
-            }
-
-            textoProductos.setText(sb.toString());
-            facturaPanel.add(new JScrollPane(textoProductos));
-
-            facturaPanel.add(Box.createVerticalStrut(10));
-
-            facturaPanel.add(new JLabel("Subtotal: $" + String.format("%.2f", subtotal)));
-            facturaPanel.add(new JLabel("IVA (16%): $" + String.format("%.2f", subtotal * 0.16)));
-            facturaPanel.add(new JLabel("TOTAL: $" + String.format("%.2f", subtotal * 1.16)));
-
-            //-----------------------------------------
-            // CÓDIGO DE BARRAS EN FACTURA EMERGENTE
-            //-----------------------------------------
-            ImageIcon iconCB2 = new ImageIcon("codigo.png"); // ← Ruta aquí también
-            Image imgCB2 = iconCB2.getImage().getScaledInstance(220, 80, Image.SCALE_SMOOTH);
-            JLabel lblCodigo2 = new JLabel(new ImageIcon(imgCB2));
-            lblCodigo2.setAlignmentX(Component.CENTER_ALIGNMENT);
-            facturaPanel.add(Box.createVerticalStrut(10));
-            facturaPanel.add(lblCodigo2);
-
-            JOptionPane.showMessageDialog(this, facturaPanel,
-                    "Factura", JOptionPane.PLAIN_MESSAGE);
+        } 
+        else if (rbTarjeta.isSelected()) {
+            metodo = "TARJETA";
+        }
+        else if (rbTransferencia.isSelected()) {
+            metodo = "TRANSFERENCIA";
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Selecciona método de pago");
+            return;
         }
 
-        if (e.getSource() == btnSalir) System.exit(0);
+        JTextArea factura = new JTextArea();
+        factura.setEditable(false);
+
+        factura.append("        FACTURA GENERADA\n");
+        factura.append("=================================\n");
+        factura.append("RESTAURANTE OAXACA\n\n");
+        factura.append(ticket.getText());
+        factura.append("\nSUBTOTAL: $" + subtotal +
+                       "\nIVA (16%): $" + iva +
+                       "\nTOTAL: $" + total + "\n\n");
+
+        factura.append("MÉTODO DE PAGO: " + metodo + "\n");
+
+        if (metodo.equals("EFECTIVO")) {
+            factura.append("CAMBIO: $" + cambio + "\n");
+        }
+        factura.append("\nCÓDIGO DE BARRAS:\n");
+        factura.append("|| ||| ||||| || ||||| |\n\n");
+
+        factura.append("¡GRACIAS POR SU VISITA!\nVUELVA PRONTO\n");
+
+        JScrollPane sp = new JScrollPane(factura);
+        sp.setPreferredSize(new Dimension(400, 450));
+
+        JOptionPane.showMessageDialog(this, sp,
+            "FACTURA RESTAURANTE OAXACA",
+            JOptionPane.PLAIN_MESSAGE);
+    }
+
+    public static void main(String[] args) {
+        new P4GabrielaAbigailEscamillaFloresOaxaca();
     }
 }
