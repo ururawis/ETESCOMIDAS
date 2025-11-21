@@ -4,13 +4,14 @@
 *Programa: P4JGabrielaAbilgailEscamillaFloresOaxaca.java
 *Autor: Escamilla Flores Gabriela Abigail
 * Ulage Parias Jorge Adan
-*Fecha: 17/11/2025
+*Fecha: 21/11/2025 (Actualizado)
 *Descripcion: Aplicación para restaurante de Oaxaca,
 * control de platillos, facturación, IVA y métodos de pago.
 ***/
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.*;
 
 public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements ActionListener {
     
@@ -33,16 +34,44 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     JRadioButton rbEfectivo, rbTarjeta, rbTransferencia;
     JTextField campoPago; 
 
-    double subtotal = 0;
+    double subtotal = 0; // Se utiliza para almacenar el TOTAL con IVA (Suma de productos)
     double iva = 0;
-    double total = 0;
-    final double TASA_IVA = 0.16; // Constante para la tasa de IVA (16%)
+    double totalSinIVA = 0; // Variable para el subtotal sin IVA
+    final double TASA_IVA_DIVISOR = 1.16; // Constante para dividir por la tasa de IVA
+
+    // Variables para almacenar datos de pago con tarjeta y facturación
+    private String tipoTarjeta = "";
+    private String numTarjeta = "";
+    private String fechaVenc = "";
+    private String cvv = "";
+    
+    private String nombreFactura = "";
+    private String rfcFactura = "";
+    private String direccionFactura = "";
+
+    // --- NUEVO MÉTODO PARA ESCALAR IMAGENES ---
+    private ImageIcon getScaledIcon(String path) {
+        try {
+            // Se asume que las imágenes están en la misma carpeta o en el classpath
+            ImageIcon originalIcon = new ImageIcon(getClass().getResource(path)); 
+            Image originalImage = originalIcon.getImage();
+            Image scaledImage = originalImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            return new ImageIcon(scaledImage);
+        } catch (Exception e) {
+            System.err.println("Error al cargar o escalar la imagen: " + path);
+            // e.printStackTrace(); // Descomentar para debug
+            return null; // Devuelve null si hay un error
+        }
+    }
+    // ------------------------------------------
 
     public P4GabrielaAbigailEscamillaFloresOaxaca() {
 
         super("Restaurante Oaxaca");
         setLayout(null); 
-        getContentPane().setBackground(COLOR_FONDO); // Fondo principal
+        getContentPane().setBackground(COLOR_FONDO);
+
+        // ... [Configuración de paneles, títulos, JTextArea, etc. - CÓDIGO SIN CAMBIOS] ...
 
         JPanel menu = new JPanel(null);
         menu.setBounds(20, 20, 520, 600);
@@ -110,10 +139,11 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         e.setForeground(COLOR_BOTON.darker());
         menu.add(e);
 
-   //CONTENIDO DEL MENÚ:
-
-        //TLAYUDA DESAYUNO
-        JLabel img1 = new JLabel(new ImageIcon(getClass().getResource("tlayuda.jpg")));
+    //CONTENIDO DEL MENÚ:
+        // (El código de los botones y campos de cantidad es el mismo que el original, omitido aquí por brevedad)
+        
+        // TLAYUDA DESAYUNO
+        JLabel img1 = new JLabel(getScaledIcon("tlayuda.jpg")); 
         img1.setBounds(20, 100, 40, 40);
         menu.add(img1);
         JLabel l1 = new JLabel("Tlayuda desayuno $80");
@@ -134,8 +164,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnTlayDes.addActionListener(agregarListener);
         menu.add(btnTlayDes);
 
-        //MEMELAS
-        JLabel img2 = new JLabel(new ImageIcon(getClass().getResource("memelas.jpg")));
+        // MEMELAS 
+        JLabel img2 = new JLabel(getScaledIcon("memelas.jpg")); 
         img2.setBounds(20, 140, 40, 40);
         menu.add(img2);
         JLabel l2 = new JLabel("Memelas $40");
@@ -156,8 +186,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnMemelas.addActionListener(agregarListener);
         menu.add(btnMemelas);
 
-        //ENCHILADAS
-        JLabel img3 = new JLabel(new ImageIcon(getClass().getResource("enchiladas.jpg")));
+        // ENCHILADAS 
+        JLabel img3 = new JLabel(getScaledIcon("enchiladas.jpg")); 
         img3.setBounds(20, 180, 40, 40);
         menu.add(img3);
         JLabel l3 = new JLabel("Enchiladas verdes $70");
@@ -178,8 +208,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnEnchiladas.addActionListener(agregarListener);
         menu.add(btnEnchiladas);
 
-        //MOLE NEGRO
-        JLabel img4 = new JLabel(new ImageIcon(getClass().getResource("mole.jpg")));
+        // MOLE NEGRO 
+        JLabel img4 = new JLabel(getScaledIcon("mole.jpg")); 
         img4.setBounds(20, 270, 40, 40);
         menu.add(img4);
         JLabel l4 = new JLabel("Mole negro $120");
@@ -200,8 +230,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnMole.addActionListener(agregarListener);
         menu.add(btnMole);
 
-        //TASAJO
-        JLabel img5 = new JLabel(new ImageIcon(getClass().getResource("tasajo.jfif")));
+        // TASAJO
+        JLabel img5 = new JLabel(getScaledIcon("tasajo.jfif")); 
         img5.setBounds(20, 310, 40, 40);
         menu.add(img5);
         JLabel l5 = new JLabel("Tasajo con frijoles $150");
@@ -222,8 +252,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnTasajo.addActionListener(agregarListener);
         menu.add(btnTasajo);
 
-        //CALDO DE PIEDRA
-        JLabel img6 = new JLabel(new ImageIcon(getClass().getResource("piedra.jfif")));
+        // CALDO DE PIEDRA 
+        JLabel img6 = new JLabel(getScaledIcon("piedra.jfif")); 
         img6.setBounds(20, 350, 40, 40);
         menu.add(img6);
         JLabel l6 = new JLabel("Caldo de piedra $110");
@@ -244,8 +274,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnPiedra.addActionListener(agregarListener);
         menu.add(btnPiedra);
 
-        //TLAYUDA GRANDE
-        JLabel img7 = new JLabel(new ImageIcon(getClass().getResource("tlayuda_grande.jpg")));
+        // TLAYUDA GRANDE 
+        JLabel img7 = new JLabel(getScaledIcon("tlayuda_grande.jpg")); 
         img7.setBounds(20, 440, 40, 40);
         menu.add(img7);
         JLabel l7 = new JLabel("Tlayuda grande $100");
@@ -266,8 +296,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnTlayGran.addActionListener(agregarListener);
         menu.add(btnTlayGran);
 
-        //EMPANADAS
-        JLabel img8 = new JLabel(new ImageIcon(getClass().getResource("empanadas.jpeg")));
+        // EMPANADAS 
+        JLabel img8 = new JLabel(getScaledIcon("empanadas.jpeg")); 
         img8.setBounds(20, 480, 40, 40);
         menu.add(img8);
         JLabel l8 = new JLabel("Empanadas amarillo $60");
@@ -288,8 +318,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnEmpanadas.addActionListener(agregarListener);
         menu.add(btnEmpanadas);
 
-        //QUESADILLAS
-        JLabel img9 = new JLabel(new ImageIcon(getClass().getResource("quesadilla.jfif")));
+        // QUESADILLAS
+        JLabel img9 = new JLabel(getScaledIcon("quesadilla.jfif")); 
         img9.setBounds(20, 520, 40, 40);
         menu.add(img9);
         JLabel l9 = new JLabel("Quesadillas flor $50");
@@ -310,6 +340,7 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         btnQuesadillas.addActionListener(agregarListener);
         menu.add(btnQuesadillas);
 
+
         //Método de pAgo
         rbEfectivo = new JRadioButton("Efectivo");
         rbTarjeta = new JRadioButton("Tarjeta");
@@ -323,6 +354,17 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         g.add(rbEfectivo);
         g.add(rbTarjeta);
         g.add(rbTransferencia);
+        
+        // *** CAMBIO CLAVE 3: Listener para la tarjeta que abre la ventana ***
+        rbTarjeta.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (rbTarjeta.isSelected()) {
+                    mostrarDialogoTarjeta();
+                }
+            }
+        });
+        // *******************************************************************
 
         rbEfectivo.setBounds(560, 60, 100, 25);
         rbTarjeta.setBounds(660, 60, 100, 25);
@@ -378,6 +420,184 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         limpiarCarrito(); 
     }
     
+    // ---------------------- CLASES DE VALIDACIÓN ----------------------
+    
+    // Clase DocumentFilter para validar solo números
+    class NumberOnlyFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            if (string.matches("\\d+")) { // Acepta solo dígitos
+                super.insertString(fb, offset, string, attr);
+            } else {
+                 Toolkit.getDefaultToolkit().beep();
+            }
+        }
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (text.matches("\\d*")) { // Acepta solo dígitos, incluyendo cadena vacía
+                super.replace(fb, offset, length, text, attrs);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+    
+    // Clase DocumentFilter para validar solo letras y espacios
+    class LetterOnlyFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            if (string.matches("[a-zA-Z\\sñÑáÁéÉíÍóÓúÚüÜ]+")) { // Acepta letras, espacios y caracteres especiales en español
+                super.insertString(fb, offset, string, attr);
+            } else {
+                 Toolkit.getDefaultToolkit().beep();
+            }
+        }
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (text.matches("[a-zA-Z\\sñÑáÁéÉíÍóÓúÚüÜ]*")) { // Acepta letras, espacios y caracteres especiales en español
+                super.replace(fb, offset, length, text, attrs);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+
+    // ---------------------- DIÁLOGO DE PAGO CON TARJETA ----------------------
+    private void mostrarDialogoTarjeta() {
+        JDialog dialog = new JDialog(this, "Datos de Tarjeta", true); // true para modal
+        dialog.setLayout(new GridLayout(6, 2, 10, 10));
+        dialog.setSize(350, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.getContentPane().setBackground(COLOR_FONDO.brighter());
+
+        // Tipo de Tarjeta (Crédito/Débito)
+        JRadioButton rbCredito = new JRadioButton("Crédito");
+        JRadioButton rbDebito = new JRadioButton("Débito");
+        ButtonGroup g = new ButtonGroup();
+        g.add(rbCredito);
+        g.add(rbDebito);
+        
+        rbCredito.setBackground(COLOR_FONDO.brighter());
+        rbDebito.setBackground(COLOR_FONDO.brighter());
+        
+        JPanel pTipo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pTipo.setBackground(COLOR_FONDO.brighter());
+        pTipo.add(rbCredito);
+        pTipo.add(rbDebito);
+        
+        dialog.add(new JLabel("Tipo de Tarjeta:"));
+        dialog.add(pTipo);
+
+        // Número de Tarjeta (Solo números)
+        JTextField txtNumTarjeta = new JTextField(numTarjeta);
+        ((AbstractDocument) txtNumTarjeta.getDocument()).setDocumentFilter(new NumberOnlyFilter());
+        dialog.add(new JLabel("Número de Tarjeta:"));
+        dialog.add(txtNumTarjeta);
+
+        // Fecha de Vencimiento
+        JTextField txtFechaVenc = new JTextField(fechaVenc);
+        dialog.add(new JLabel("Fecha de Vencimiento:"));
+        dialog.add(txtFechaVenc);
+
+        // CVV (Solo números)
+        JTextField txtCVV = new JTextField(cvv);
+        ((AbstractDocument) txtCVV.getDocument()).setDocumentFilter(new NumberOnlyFilter());
+        dialog.add(new JLabel("CVV:"));
+        dialog.add(txtCVV);
+        
+        // Botones de Acción
+        JButton btnAceptar = new JButton("Aceptar");
+        JButton btnCancelar = new JButton("Cancelar");
+
+        btnAceptar.addActionListener(e -> {
+            if (!rbCredito.isSelected() && !rbDebito.isSelected()) {
+                JOptionPane.showMessageDialog(dialog, "Debes seleccionar Crédito o Débito.", "Error de Selección", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (txtNumTarjeta.getText().trim().isEmpty() || txtFechaVenc.getText().trim().isEmpty() || txtCVV.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Todos los campos son obligatorios.", "Error de Campos", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Guardar datos
+            tipoTarjeta = rbCredito.isSelected() ? "Crédito" : "Débito";
+            numTarjeta = txtNumTarjeta.getText().trim();
+            fechaVenc = txtFechaVenc.getText().trim();
+            cvv = txtCVV.getText().trim();
+            
+            rbTarjeta.setText("Tarjeta (" + tipoTarjeta + ")"); // Actualizar el texto del radio button
+            dialog.dispose();
+        });
+
+        btnCancelar.addActionListener(e -> {
+            rbTarjeta.setSelected(false); // Deseleccionar Tarjeta si cancela
+            g.clearSelection();
+            rbTarjeta.setText("Tarjeta"); 
+            dialog.dispose();
+        });
+        
+        dialog.add(btnAceptar);
+        dialog.add(btnCancelar);
+
+        dialog.setVisible(true);
+    }
+    
+    // ---------------------- DIÁLOGO DE DATOS DE FACTURACIÓN ----------------------
+    private boolean mostrarDialogoFacturacion() {
+        JDialog dialog = new JDialog(this, "Datos de Facturación", true); // true para modal
+        dialog.setLayout(new GridLayout(4, 2, 10, 10));
+        dialog.setSize(400, 250);
+        dialog.setLocationRelativeTo(this);
+        dialog.getContentPane().setBackground(COLOR_FONDO.brighter());
+
+        // Nombre (Solo letras y espacios)
+        JTextField txtNombre = new JTextField(nombreFactura);
+        ((AbstractDocument) txtNombre.getDocument()).setDocumentFilter(new LetterOnlyFilter());
+        dialog.add(new JLabel("Nombre o Razón Social:"));
+        dialog.add(txtNombre);
+
+        // RFC (Acepta ambos: letras y números)
+        JTextField txtRFC = new JTextField(rfcFactura);
+        dialog.add(new JLabel("RFC:"));
+        dialog.add(txtRFC);
+
+        // Dirección (Acepta ambos: letras, números, y otros caracteres)
+        JTextField txtDireccion = new JTextField(direccionFactura);
+        dialog.add(new JLabel("Dirección (Calle, No, Col.):"));
+        dialog.add(txtDireccion);
+        
+        // Botones de Acción
+        JButton btnAceptar = new JButton("Generar Factura");
+        JButton btnCancelar = new JButton("Cancelar");
+        
+        final boolean[] result = {false};
+
+        btnAceptar.addActionListener(e -> {
+            if (txtNombre.getText().trim().isEmpty() || txtRFC.getText().trim().isEmpty() || txtDireccion.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Todos los campos de facturación son obligatorios.", "Campos Faltantes", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Guardar datos
+            nombreFactura = txtNombre.getText().trim();
+            rfcFactura = txtRFC.getText().trim();
+            direccionFactura = txtDireccion.getText().trim();
+            
+            result[0] = true; // Indicar que se debe continuar con la facturación
+            dialog.dispose();
+        });
+        
+        btnCancelar.addActionListener(e -> {
+            dialog.dispose();
+        });
+        
+        dialog.add(btnAceptar);
+        dialog.add(btnCancelar);
+
+        dialog.setVisible(true);
+        return result[0];
+    }
+    
     //Listener para botones de agregar
     private void handleAgregar(ActionEvent e) {
         JButton source = (JButton) e.getSource();
@@ -389,7 +609,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
             int cant = Integer.parseInt(cantField.getText());
             if (cant > 0) {
                 double s = cant * precio; 
-                subtotal += s;
+                // El subtotal es la suma de todos los productos (Total con IVA incluido)
+                subtotal += s; 
                 ticket.append(nombre + " x" + cant + " = $" + String.format("%.2f", s) + "\n");
                 actualizarTotales(); 
             }
@@ -402,42 +623,55 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     
     //Método para calcular y actualizar los labels de totales
     private void actualizarTotales() {
-        iva = subtotal * TASA_IVA;
-        total = subtotal + iva;
+        // Cálculo según la solicitud: Total = suma de productos (variable 'subtotal')
+        // Subtotal (sin IVA) = Total / 1.16
+        totalSinIVA = subtotal / TASA_IVA_DIVISOR;
+        // IVA = Total - Subtotal
+        iva = subtotal - totalSinIVA;
         
         // Escriben las cantidades y usa String.format para que solo escriba dos decimales
-        lblSubtotal.setText("SUBTOTAL: $" + String.format("%.2f", subtotal));
+        lblSubtotal.setText("SUBTOTAL: $" + String.format("%.2f", totalSinIVA));
         lblIVA.setText("IVA (16%): $" + String.format("%.2f", iva));
-        lblTotal.setText("TOTAL: $" + String.format("%.2f", total));
+        lblTotal.setText("TOTAL: $" + String.format("%.2f", subtotal)); // Muestra 'subtotal' como el total
     }
     
     // Método para limpiar el carrito y reiniciar variables
     private void limpiarCarrito() {
         subtotal = 0;
         iva = 0;
-        total = 0;
+        totalSinIVA = 0;
         
         ticket.setText("");
         
-        //Resetea los campos de cantidad -- les pone vacío
-        cantTlayDes.setText("");
-        cantMemelas.setText("");
-        cantEnchiladas.setText("");
-        cantMole.setText("");
-        cantTasajo.setText("");
-        cantPiedra.setText("");
-        cantTlayGran.setText("");
-        cantEmpanadas.setText("");
-        cantQuesa.setText("");
+        //Resetea los campos de cantidad
+        cantTlayDes.setText("0"); 
+        cantMemelas.setText("0");
+        cantEnchiladas.setText("0");
+        cantMole.setText("0");
+        cantTasajo.setText("0");
+        cantPiedra.setText("0");
+        cantTlayGran.setText("0");
+        cantEmpanadas.setText("0");
+        cantQuesa.setText("0");
         
         campoPago.setText("");
         
-        // Deseleccionar RadioButtons
+        // Deseleccionar RadioButtons y restablecer texto de Tarjeta
         if (rbEfectivo.isSelected() || rbTarjeta.isSelected() || rbTransferencia.isSelected()) {
             rbEfectivo.setSelected(false);
             rbTarjeta.setSelected(false);
             rbTransferencia.setSelected(false);
         }
+        rbTarjeta.setText("Tarjeta"); 
+        
+        // Limpiar datos de tarjeta y facturación
+        tipoTarjeta = "";
+        numTarjeta = "";
+        fechaVenc = "";
+        cvv = "";
+        nombreFactura = "";
+        rfcFactura = "";
+        direccionFactura = "";
         
         actualizarTotales();
     }
@@ -446,76 +680,105 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     public void actionPerformed(ActionEvent e) {
         
         if (e.getActionCommand().equals("Generar factura")) {
-            if (subtotal == 0) {
+            
+            if (subtotal == 0) { // 'subtotal' ahora es el Total con IVA
                 JOptionPane.showMessageDialog(this, "No añadiste nada al carrito. Agrega productos para facturar.");
                 return;
             }
             
-            iva = subtotal * TASA_IVA;
-            total = subtotal + iva;
-
             String metodo = "";
             double cambio = 0;
+            boolean pagoValido = false;
 
             if (rbEfectivo.isSelected()) {
                 metodo = "EFECTIVO";
                 try {
                     double pago = Double.parseDouble(campoPago.getText());
-                    if (pago < total) {
-                        JOptionPane.showMessageDialog(this, "Pago insuficiente: Faltan $" + String.format("%.2f", total - pago));
+                    if (pago < subtotal) { // subtotal es el TOTAL a pagar
+                        JOptionPane.showMessageDialog(this, "Pago insuficiente: Faltan $" + String.format("%.2f", subtotal - pago));
                         return;
                     }
-                    cambio = pago - total;
+                    cambio = pago - subtotal;
+                    pagoValido = true;
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Ingresa un monto de pago válido para efectivo.");
                     return;
                 }
             } 
             else if (rbTarjeta.isSelected()) {
-                metodo = "TARJETA";
+                if (numTarjeta.isEmpty() || tipoTarjeta.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Completa los datos de la tarjeta para continuar.", "Datos de Tarjeta Faltantes", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                metodo = "TARJETA (" + tipoTarjeta + ")";
+                pagoValido = true;
             }
             else if (rbTransferencia.isSelected()) {
                 metodo = "TRANSFERENCIA";
+                pagoValido = true;
             }
             else {
                 JOptionPane.showMessageDialog(this, "Selecciona un método de pago.");
                 return;
             }
+            
+            // Si el pago es válido, abrir el diálogo de facturación
+            if (pagoValido) {
+                if (mostrarDialogoFacturacion()) {
+                    
+                    // Facturación con los datos capturados y validados
+                    JTextArea factura = new JTextArea();
+                    factura.setEditable(false);
 
-            JTextArea factura = new JTextArea();
-            factura.setEditable(false);
+                    factura.append("       FACTURA GENERADA\n");
+                    factura.append("=================================\n");
+                    factura.append("RESTAURANTE OAXACA\n\n");
+                    
+                    // Datos de Facturación
+                    factura.append("CLIENTE:\n");
+                    factura.append("Nombre: " + nombreFactura + "\n");
+                    factura.append("RFC: " + rfcFactura + "\n");
+                    factura.append("Dirección: " + direccionFactura + "\n\n");
+                    
+                    // Detalle del Consumo
+                    factura.append(ticket.getText()); 
+                    
+                    // Totales
+                    factura.append("\nSUBTOTAL: $" + String.format("%.2f", totalSinIVA) +
+                                   "\nIVA (16%): $" + String.format("%.2f", iva) +
+                                   "\nTOTAL: $" + String.format("%.2f", subtotal) + "\n\n"); // subtotal es el TOTAL
+        
+                    factura.append("MÉTODO DE PAGO: " + metodo + "\n");
+                    
+                    if (metodo.contains("TARJETA")) {
+                        factura.append("Tipo: " + tipoTarjeta + " | Terminación: **" + numTarjeta.substring(numTarjeta.length() - 4) + "\n");
+                    }
 
-            factura.append("        FACTURA GENERADA\n");
-            factura.append("=================================\n");
-            factura.append("RESTAURANTE OAXACA\n\n");
-            factura.append(ticket.getText()); 
-            factura.append("\nSUBTOTAL: $" + String.format("%.2f", subtotal) +
-                           "\nIVA (16%): $" + String.format("%.2f", iva) +
-                           "\nTOTAL: $" + String.format("%.2f", total) + "\n\n");
+                    if (metodo.equals("EFECTIVO")) {
+                        factura.append("PAGO RECIBIDO: $" + String.format("%.2f", subtotal + cambio) + "\n");
+                        factura.append("CAMBIO: $" + String.format("%.2f", cambio) + "\n");
+                    }
+                    factura.append("\nCÓDIGO DE BARRAS:\n");
+                    factura.append("|| ||| ||||| || ||||| |\n\n");
 
-            factura.append("MÉTODO DE PAGO: " + metodo + "\n");
+                    factura.append("¡GRACIAS POR SU VISITA!\nVUELVA PRONTO\n");
 
-            if (metodo.equals("EFECTIVO")) {
-                factura.append("CAMBIO: $" + String.format("%.2f", cambio) + "\n");
+                    JScrollPane sp = new JScrollPane(factura);
+                    sp.setPreferredSize(new Dimension(400, 450));
+
+                    JOptionPane.showMessageDialog(this, sp,
+                        "FACTURA RESTAURANTE OAXACA",
+                        JOptionPane.PLAIN_MESSAGE);
+                        
+                    // Limpia el carrito después de generar la factura
+                    limpiarCarrito(); 
+                }
             }
-            factura.append("\nCÓDIGO DE BARRAS:\n");
-            factura.append("|| ||| ||||| || ||||| |\n\n");
-
-            factura.append("¡GRACIAS POR SU VISITA!\nVUELVA PRONTO\n");
-
-            JScrollPane sp = new JScrollPane(factura);
-            sp.setPreferredSize(new Dimension(400, 450));
-
-            JOptionPane.showMessageDialog(this, sp,
-                "FACTURA RESTAURANTE OAXACA",
-                JOptionPane.PLAIN_MESSAGE);
-                
-            // Limpia el carrito después de generar la factura
-            limpiarCarrito(); 
         }
     }
 
     public static void main(String[] args) {
+        // Asegúrate de que el path de las imágenes sea correcto o coméntalas si no las tienes.
         new P4GabrielaAbigailEscamillaFloresOaxaca();
     }
 }
