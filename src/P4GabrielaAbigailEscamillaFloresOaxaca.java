@@ -4,7 +4,7 @@
 *Programa: P4JGabrielaAbilgailEscamillaFloresOaxaca.java
 *Autor: Escamilla Flores Gabriela Abigail
 * Ulage Parias Jorge Adan
-*Fecha: 21/11/2025 (Actualizado)
+*Fecha: 21/11/2025
 *Descripcion: Aplicación para restaurante de Oaxaca,
 * control de platillos, facturación, IVA y métodos de pago.
 ***/
@@ -40,6 +40,8 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     final double TASA_IVA_DIVISOR = 1.16; // Constante para dividir por la tasa de IVA
 
     // Variables para almacenar datos de pago con tarjeta y facturación
+    /*** "La palabra clave private en Java es un modificador de acceso que se utiliza para restringir la visibilidad de los campos, métodos y constructores a la clase que los define. Este mecanismo de encapsulación ayuda a proteger el estado interno de un objeto y favorece la ocultación de datos."
+     * Referencia: DataCamp. (s. f.). private Palabra clave en Java: Uso y ejemplos. DataCamp. https://www.datacamp.com/es/doc/java/private***/
     private String tipoTarjeta = "";
     private String numTarjeta = "";
     private String fechaVenc = "";
@@ -49,21 +51,18 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
     private String rfcFactura = "";
     private String direccionFactura = "";
 
-    // --- NUEVO MÉTODO PARA ESCALAR IMAGENES ---
+    // MÉTODO PARA ESCALAR IMAGENES
     private ImageIcon getScaledIcon(String path) {
         try {
-            // Se asume que las imágenes están en la misma carpeta o en el classpath
             ImageIcon originalIcon = new ImageIcon(getClass().getResource(path)); 
             Image originalImage = originalIcon.getImage();
             Image scaledImage = originalImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             return new ImageIcon(scaledImage);
         } catch (Exception e) {
             System.err.println("Error al cargar o escalar la imagen: " + path);
-            // e.printStackTrace(); // Descomentar para debug
             return null; // Devuelve null si hay un error
         }
     }
-    // ------------------------------------------
 
     public P4GabrielaAbigailEscamillaFloresOaxaca() {
 
@@ -71,7 +70,7 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         setLayout(null); 
         getContentPane().setBackground(COLOR_FONDO);
 
-        // ... [Configuración de paneles, títulos, JTextArea, etc. - CÓDIGO SIN CAMBIOS] ...
+        // CONFIGURACIONES PARA LOS PANELES:
 
         JPanel menu = new JPanel(null);
         menu.setBounds(20, 20, 520, 600);
@@ -355,16 +354,14 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         g.add(rbTarjeta);
         g.add(rbTransferencia);
         
-        // *** CAMBIO CLAVE 3: Listener para la tarjeta que abre la ventana ***
+        // *** Listener para la tarjeta que abre la ventana ***
         rbTarjeta.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (rbTarjeta.isSelected()) {
                     mostrarDialogoTarjeta();
                 }
             }
         });
-        // *******************************************************************
 
         rbEfectivo.setBounds(560, 60, 100, 25);
         rbTarjeta.setBounds(660, 60, 100, 25);
@@ -420,11 +417,10 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         limpiarCarrito(); 
     }
     
-    // ---------------------- CLASES DE VALIDACIÓN ----------------------
+    //Validaciones
     
     // Clase DocumentFilter para validar solo números
     class NumberOnlyFilter extends DocumentFilter {
-        @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
             if (string.matches("\\d+")) { // Acepta solo dígitos
                 super.insertString(fb, offset, string, attr);
@@ -432,7 +428,6 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
                  Toolkit.getDefaultToolkit().beep();
             }
         }
-        @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
             if (text.matches("\\d*")) { // Acepta solo dígitos, incluyendo cadena vacía
                 super.replace(fb, offset, length, text, attrs);
@@ -442,17 +437,15 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         }
     }
     
-    // Clase DocumentFilter para validar solo letras y espacios
+    // Clase DocumentFilter para validar solo letras y espacios Referencia: DocumentFilter (Java Platform SE 8 ). (2025b, octubre 20). https://docs.oracle.com/javase/8/docs/api/javax/swing/text/DocumentFilter.html
     class LetterOnlyFilter extends DocumentFilter {
-        @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
             if (string.matches("[a-zA-Z\\sñÑáÁéÉíÍóÓúÚüÜ]+")) { // Acepta letras, espacios y caracteres especiales en español
                 super.insertString(fb, offset, string, attr);
             } else {
-                 Toolkit.getDefaultToolkit().beep();
+                 Toolkit.getDefaultToolkit().beep(); /***Referencia: Toolkit (Java Platform SE 8 ). (2025b, octubre 20). https://docs.oracle.com/javase/8/docs/api/java/awt/Toolkit.html ***/
             }
         }
-        @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
             if (text.matches("[a-zA-Z\\sñÑáÁéÉíÍóÓúÚüÜ]*")) { // Acepta letras, espacios y caracteres especiales en español
                 super.replace(fb, offset, length, text, attrs);
@@ -462,7 +455,7 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         }
     }
 
-    // ---------------------- DIÁLOGO DE PAGO CON TARJETA ----------------------
+    // Pago con tarjeta
     private void mostrarDialogoTarjeta() {
         JDialog dialog = new JDialog(this, "Datos de Tarjeta", true); // true para modal
         dialog.setLayout(new GridLayout(6, 2, 10, 10));
@@ -542,7 +535,7 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
         dialog.setVisible(true);
     }
     
-    // ---------------------- DIÁLOGO DE DATOS DE FACTURACIÓN ----------------------
+    // Para la facturación
     private boolean mostrarDialogoFacturacion() {
         JDialog dialog = new JDialog(this, "Datos de Facturación", true); // true para modal
         dialog.setLayout(new GridLayout(4, 2, 10, 10));
@@ -776,9 +769,7 @@ public class P4GabrielaAbigailEscamillaFloresOaxaca extends JFrame implements Ac
             }
         }
     }
-
     public static void main(String[] args) {
-        // Asegúrate de que el path de las imágenes sea correcto o coméntalas si no las tienes.
         new P4GabrielaAbigailEscamillaFloresOaxaca();
     }
 }
